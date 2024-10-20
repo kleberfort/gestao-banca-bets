@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- EditText and Button to add category -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editTextCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Add Category"/>
+
+        <Button
+            android:id="@+id/buttonAddCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"/>
+    </LinearLayout>
+
+    <!-- Spinner to display categories -->
+    <Spinner
+        android:id="@+id/spinnerCategories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Buttons to edit and delete category -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/buttonEditCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Category"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/buttonDeleteCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Category"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <!-- Floating action button to add item related to selected category -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/add_circle_24px"/>
+
+    <!-- RecyclerView to show the items -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewItems"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>
