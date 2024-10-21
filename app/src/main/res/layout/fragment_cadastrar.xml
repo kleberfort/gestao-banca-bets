@@ -17,13 +17,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Add Category"/>
+            android:hint="Adicionar categoria"/>
 
         <Button
             android:id="@+id/buttonAddCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add"/>
+            android:text="Adicionar"/>
     </LinearLayout>
 
     <!-- Spinner to display categories -->
@@ -44,14 +44,14 @@
             android:id="@+id/buttonEditCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Category"
+            android:text="Editar Categoria"
             android:layout_weight="1"/>
 
         <Button
             android:id="@+id/buttonDeleteCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete Category"
+            android:text="Delete Categoria"
             android:layout_weight="1"
             android:layout_marginStart="16dp"/>
     </LinearLayout>

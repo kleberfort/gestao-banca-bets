@@ -1,9 +1,12 @@
 package com.example.gestaobanca.fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,26 +26,55 @@ import com.example.gestaobanca.adapter.ItemAdapter;
 import com.example.gestaobanca.databinding.FragmentCadastrarBinding;
 import com.example.gestaobanca.model.NomesLista;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CadastrarFragment extends Fragment {
+
+    private FragmentCadastrarBinding binding;
 
     private EditText editTextCategory;
     private Button buttonAddCategory, buttonEditCategory, buttonDeleteCategory;
     private Spinner spinnerCategories;
     private FloatingActionButton fabAddItem;
     private RecyclerView recyclerViewItems;
-    private ItemAdapter itemAdapter;
 
+
+    private ItemAdapter itemAdapter;
     private ArrayList<String> categories;
     private ArrayAdapter<String> spinnerAdapter;
     private HashMap<String, ArrayList<String>> categoryItemsMap;  // HashMap to store items for each category
     private ArrayList<String> currentItemsList;
-
     private String currentCategory;
 
+
+    // Nome do SharedPreferences e chave para salvar a lista
+    private static final String PREFS_NAME = "my_prefs";
+    private static final String LIST_KEY = "produtos_key";
+
+
+    private OnCategoryItemsMapListener listener;
+
+    // Interface para enviar o HashMap
+    public interface OnCategoryItemsMapListener {
+        void onEnviarCategoryItemsMap(HashMap<String, ArrayList<String>> categoryItemsMap);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        // Verifica se o contexto (Activity) implementa a interface
+        if (context instanceof OnCategoryItemsMapListener) {
+            listener = (OnCategoryItemsMapListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " deve implementar OnCategoryItemsMapListener");
+        }
+    }
 
 
 
@@ -68,15 +100,29 @@ public class CadastrarFragment extends Fragment {
         categoryItemsMap = new HashMap<>();
         currentItemsList = new ArrayList<>();
 
+
+
         // Configurando o Spinner
         spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategories.setAdapter(spinnerAdapter);
 
+        // Carregar dados do SharedPreferences
+        loadDataFromSharedPreferences();
+
+
+
         // Configurando o RecyclerView e o Adapter
         itemAdapter = new ItemAdapter(currentItemsList);
         recyclerViewItems.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewItems.setAdapter(itemAdapter);
+
+
+        // Método para chamar o listener e passar o HashMap
+        if (listener != null) {
+            listener.onEnviarCategoryItemsMap(categoryItemsMap);
+        }
+
 
         // Botão para adicionar uma nova categoria
         buttonAddCategory.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +133,11 @@ public class CadastrarFragment extends Fragment {
                     categories.add(newCategory);
                     spinnerAdapter.notifyDataSetChanged();
                     categoryItemsMap.put(newCategory, new ArrayList<>());  // Cria uma lista de itens para a nova categoria
+
+                    saveDataToSharedPreferences();
                     editTextCategory.setText("");  // Limpa o campo após adicionar
+
+
                 }
             }
         });
@@ -111,17 +161,6 @@ public class CadastrarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 AddNomesItens();
-
-
-//                if (currentCategory != null && !currentCategory.isEmpty()) {
-//                    NomesLista nomesLista = new NomesLista();
-//                    String newItem = "Item related to: " + currentCategory;
-//                    ArrayList<String> items = categoryItemsMap.get(currentCategory); // Obtém a lista de itens da categoria
-//                    if (items != null) {
-//                        items.add(newItem);  // Adiciona o item à lista da categoria
-//                        updateRecyclerViewForCategory(currentCategory);  // Atualiza o RecyclerView
-//                    }
-//                }
             }
         });
 
@@ -196,6 +235,7 @@ public class CadastrarFragment extends Fragment {
 
                     if (items != null) {
                         items.add(itemName);  // Adiciona o item à lista da categoria
+                        saveDataToSharedPreferences();
                         updateRecyclerViewForCategory(currentCategory);  // Atualiza o RecyclerView
                     }
                 } else {
@@ -244,6 +284,7 @@ public class CadastrarFragment extends Fragment {
                     // Atualiza a lista de categorias
                     int index = categories.indexOf(oldCategoryName);
                     categories.set(index, newCategoryName);
+                    saveDataToSharedPreferences();
                     spinnerAdapter.notifyDataSetChanged();
 
                     // Atualiza a categoria atual
@@ -268,6 +309,8 @@ public class CadastrarFragment extends Fragment {
         categoryItemsMap.remove(categoryName);
         categories.remove(categoryName);
 
+        saveDataToSharedPreferences();
+
         // Atualiza o Spinner
         spinnerAdapter.notifyDataSetChanged();
 
@@ -275,5 +318,37 @@ public class CadastrarFragment extends Fragment {
         currentItemsList.clear();
         itemAdapter.notifyDataSetChanged();
     }
+
+    private void saveDataToSharedPreferences() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(categoryItemsMap);  // Converte o HashMap para JSON
+
+        editor.putString("categoryItemsMap", json);   // Salva o JSON no SharedPreferences
+        editor.apply();  // Aplica as mudanças
+    }
+
+    private void loadDataFromSharedPreferences() {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("categoryItemsMap", null);  // Recupera o JSON
+
+        if (json != null) {
+            Type type = new TypeToken<HashMap<String, ArrayList<String>>>() {}.getType();
+            categoryItemsMap = gson.fromJson(json, type);  // Converte o JSON de volta para HashMap
+        } else {
+            categoryItemsMap = new HashMap<>();  // Se não houver dados salvos, inicializa um novo HashMap
+        }
+
+        // Atualiza a lista de categorias e o spinner
+        categories.clear();
+        categories.addAll(categoryItemsMap.keySet());
+        spinnerAdapter.notifyDataSetChanged();
+    }
+
+
 
 }

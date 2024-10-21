@@ -16,7 +16,13 @@ import com.example.gestaobanca.fragments.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class MainActivity extends AppCompatActivity implements CadastrarFragment.OnCategoryItemsMapListener {
+
+
+    private HashMap<String, ArrayList<String>> minhaListaMap;  // HashMap to store items for each category
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,5 +70,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onEnviarCategoryItemsMap(HashMap<String, ArrayList<String>> categoryItemsMap) {
 
+        minhaListaMap = categoryItemsMap;
+
+    }
 }
