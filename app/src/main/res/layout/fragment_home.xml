@@ -7,7 +7,7 @@
     tools:context=".fragments.HomeFragment">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gestão de Banca"
@@ -16,23 +16,23 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvTextoBanca"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Banca Inicial"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal"
+        android:id="@+id/etBancaInicialCarregar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="numberDecimal"
-        app:layout_constraintBottom_toBottomOf="@+id/textView2"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textView2" />
+        app:layout_constraintBottom_toBottomOf="@+id/tvTextoBanca"
+        app:layout_constraintStart_toEndOf="@+id/tvTextoBanca"
+        app:layout_constraintTop_toTopOf="@+id/tvTextoBanca" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -41,10 +41,11 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal">
+        app:layout_constraintTop_toBottomOf="@+id/etBancaInicialCarregar">
 
         <!-- RadioGroup com orientação horizontal -->
         <RadioGroup
+            android:id="@+id/rgOpcoes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -52,21 +53,21 @@
 
             <!-- RadioButtons lado a lado -->
             <RadioButton
-                android:id="@+id/radioButton"
+                android:id="@+id/rb100Und"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="100 Und" />
 
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/rb50Und"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="50 Und" />
 
             <RadioButton
-                android:id="@+id/radioButton3"
+                android:id="@+id/rb40Und"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -76,7 +77,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tvUndBanca"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="1 Und Sua é: "
@@ -90,7 +91,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5">
+        app:layout_constraintTop_toBottomOf="@+id/tvTituloPreencherDados">
 
         <LinearLayout
             android:id="@+id/linearLayout3"
@@ -102,23 +103,26 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
             <Spinner
-                android:id="@+id/spinner2"
+                android:id="@+id/spnHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+
+            <Spinner
+                android:id="@+id/spnAway"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
             <Spinner
-                android:id="@+id/spinner3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/spinner4"
+                android:id="@+id/spnMercado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
         </LinearLayout>
+
+
 
         <LinearLayout
             android:id="@+id/linearLayout2"
@@ -130,21 +134,21 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/tvHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Time Casa" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/tvAway"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Time Fora" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tvMercado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -161,14 +165,14 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/tvOdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="ODD" />
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/tvValor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -187,7 +191,7 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
             <EditText
-                android:id="@+id/editTextNumberDecimal2"
+                android:id="@+id/etValorOdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -195,7 +199,7 @@
                 android:inputType="numberDecimal" />
 
             <EditText
-                android:id="@+id/editTextNumberDecimal3"
+                android:id="@+id/etValorUnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -205,7 +209,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView13"
+            android:id="@+id/tvTextoTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Total: "
@@ -213,17 +217,17 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
         <TextView
-            android:id="@+id/textView14"
+            android:id="@+id/tvOddxUnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            app:layout_constraintBottom_toBottomOf="@+id/textView13"
-            app:layout_constraintStart_toEndOf="@+id/textView13"
-            app:layout_constraintTop_toTopOf="@+id/textView13" />
+            app:layout_constraintBottom_toBottomOf="@+id/tvTextoTotal"
+            app:layout_constraintStart_toEndOf="@+id/tvTextoTotal"
+            app:layout_constraintTop_toTopOf="@+id/tvTextoTotal" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/tvTituloPreencherDados"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Preenha os Dados"
@@ -231,7 +235,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/tvUndBanca" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -252,7 +256,7 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
     <TextView
-        android:id="@+id/textView15"
+        android:id="@+id/tvTotalBanca"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Total da sua Banca: "

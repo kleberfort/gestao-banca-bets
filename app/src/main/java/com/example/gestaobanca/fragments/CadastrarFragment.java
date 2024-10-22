@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.example.gestaobanca.R;
 import com.example.gestaobanca.adapter.ItemAdapter;
 import com.example.gestaobanca.databinding.FragmentCadastrarBinding;
-import com.example.gestaobanca.model.NomesLista;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -43,8 +42,8 @@ public class CadastrarFragment extends Fragment {
     private FloatingActionButton fabAddItem;
     private RecyclerView recyclerViewItems;
 
-
     private ItemAdapter itemAdapter;
+
     private ArrayList<String> categories;
     private ArrayAdapter<String> spinnerAdapter;
     private HashMap<String, ArrayList<String>> categoryItemsMap;  // HashMap to store items for each category

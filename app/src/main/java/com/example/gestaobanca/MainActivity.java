@@ -53,6 +53,13 @@ public class MainActivity extends AppCompatActivity implements CadastrarFragment
                 if (id == R.id.navigation_home) {
                     selectedFragment = new HomeFragment();
 
+                    // Passar o HashMap (minhaListaMap) para o HomeFragment
+                    if (minhaListaMap != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("categoryItemsMap", minhaListaMap);
+                        selectedFragment.setArguments(bundle);
+                    }
+
 
                 } else if (id == R.id.navigation_edit_product) {
                     selectedFragment = new CadastrarFragment();
