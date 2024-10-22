@@ -1,6 +1,8 @@
 package com.example.gestaobanca.fragments;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +41,14 @@ public class HomeFragment extends Fragment {
     private MinhaListaAdapter minhaListaAdapter; // Adaptador do RecyclerView
 
 
+    private double bancaInicial = 0.0;
+    private double divisor = 0.0;  //
+
+    private double valorOdd = 0.0;
+    private double valorUnd = 0.0;
+
+
+
     // Variáveis para armazenar os itens selecionados
     private String itemSelecionadoHome;
     private String itemSelecionadoAway;
@@ -71,6 +81,84 @@ public class HomeFragment extends Fragment {
 
         }
 
+        // Adiciona o TextWatcher ao EditText etValorOdd
+        etValorOdd.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().isEmpty()) {
+                    try {
+                        valorOdd = Double.parseDouble(s.toString());
+                    } catch (NumberFormatException e) {
+                        valorOdd = 0.0; // Define como 0 se a conversão falhar
+                    }
+                    calcularOddxUnd();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Adiciona o TextWatcher ao EditText etValorUnd
+        etValorUnd.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().isEmpty()) {
+                    try {
+                        valorUnd = Double.parseDouble(s.toString());
+                    } catch (NumberFormatException e) {
+                        valorUnd = 0.0; // Define como 0 se a conversão falhar
+                    }
+                    calcularOddxUnd();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Adiciona o TextWatcher ao EditText para capturar a entrada do usuário
+        etBancaInicialCarregar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().isEmpty()) {
+                    try {
+                        bancaInicial = Double.parseDouble(s.toString());
+                    } catch (NumberFormatException e) {
+                        bancaInicial = 0.0; // Definir como 0 se houver erro na conversão
+                    }
+                    calcularValorUnidade();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+// Adiciona o OnCheckedChangeListener ao RadioGroup para capturar a opção selecionada
+        rgOpcoes.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb100Und) {
+                divisor = 100.0;
+            } else if (checkedId == R.id.rb50Und) {
+                divisor = 50.0;
+            } else if (checkedId == R.id.rb40Und) {
+                divisor = 40.0;
+            }
+            calcularValorUnidade();  // Somente calcula após a escolha de uma opção
+        });
+
+
 
         // Configurar os Spinners
         if (minhaListaMap != null) {
@@ -81,8 +169,30 @@ public class HomeFragment extends Fragment {
 
 
 
+
+
             return view;
         }
+
+    // Método para calcular o resultado (Odd x Und) e exibir no TextView
+    private void calcularOddxUnd() {
+        if (valorOdd > 0 && valorUnd > 0) {
+            double resultado = valorOdd * valorUnd;
+            tvOddxUnd.setText(String.format("Valor: %.2f", resultado));
+        } else {
+            tvOddxUnd.setText("");  // Não exibe nada até que ambos os valores sejam válidos
+        }
+    }
+
+    // Método para calcular e exibir o valor da unidade
+    private void calcularValorUnidade() {
+        if (bancaInicial > 0 && divisor > 0) {
+            double valorUnidade = bancaInicial / divisor;
+            tvUndBanca.setText(String.format("1 Und Sua é: %.2f", valorUnidade));
+        } else {
+            tvUndBanca.setText("");  // Deixa o TextView vazio até que uma opção seja escolhida
+        }
+    }
 
 
     // Método para configurar o Spinner
