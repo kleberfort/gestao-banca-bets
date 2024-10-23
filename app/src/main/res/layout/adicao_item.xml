@@ -1,0 +1,119 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="16dp"
+    android:layout_margin="4dp"
+    android:elevation="4dp"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:background="@color/cyanLight"
+        android:orientation="vertical"
+        >
+
+        <!-- Primeira linha: Home Team e Away Team -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            >
+
+            <TextView
+                android:id="@+id/tvHomeTeam"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="Home Team"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/tvAwayTeam"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Away Team"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="left"/>
+        </LinearLayout>
+
+        <!-- Segunda linha: Mercado e Spinner de Situação -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/textViewMercado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mercado"
+                android:textSize="14sp"
+                android:gravity="start"/>
+
+            <TextView
+                android:id="@+id/tvDataInsercao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Data"
+                android:textSize="14sp"
+                android:gravity="start"/>
+
+            <Spinner
+                android:id="@+id/spinnerSituacao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"/>
+        </LinearLayout>
+
+        <!-- Terceira linha: Odd, Valor e Resultado (Odd x Valor) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvOdd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Odd"
+                android:textSize="14sp"
+                android:gravity="start"/>
+
+            <TextView
+                android:id="@+id/tvValor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Valor"
+                android:textSize="14sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/tvOddxUnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Odd x Valor"
+                android:textSize="14sp"
+                android:gravity="left"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

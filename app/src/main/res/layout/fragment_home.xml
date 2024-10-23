@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="8dp"
     tools:context=".fragments.HomeFragment">
 
     <TextView
         android:id="@+id/tvTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:textStyle="bold"
         android:text="Gestão de Banca"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,35 +23,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:textSize="16dp"
+        android:textStyle="bold"
         android:text="Banca Inicial"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
 
     <EditText
         android:id="@+id/etBancaInicialCarregar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
+        android:layout_width="114dp"
+        android:layout_height="43dp"
+        android:padding="4dp"
+        android:layout_marginLeft="8dp"
+        android:ems="5"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="@+id/tvTextoBanca"
         app:layout_constraintStart_toEndOf="@+id/tvTextoBanca"
-        app:layout_constraintTop_toTopOf="@+id/tvTextoBanca" />
+        app:layout_constraintTop_toTopOf="@+id/tvTextoBanca"
+        app:layout_constraintVertical_bias="0.666" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_width="88dp"
+        android:layout_height="90dp"
+        android:background="@color/cyanEscuro"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etBancaInicialCarregar">
+        app:layout_constraintStart_toEndOf="@+id/tvTitulo"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitulo">
 
         <!-- RadioGroup com orientação horizontal -->
         <RadioGroup
             android:id="@+id/rgOpcoes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:weightSum="3">
 
             <!-- RadioButtons lado a lado -->
@@ -80,14 +89,20 @@
         android:id="@+id/tvUndBanca"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1 Und Sua é: "
+        android:background="@color/green"
+        android:textStyle="bold"
+        android:textSize="16dp"
+        android:text="Unidade Sua é: "
+        app:layout_constraintBottom_toTopOf="@+id/tvTituloPreencherDados"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTextoBanca" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="@color/cyanEscuro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -128,6 +143,7 @@
             android:id="@+id/linearLayout2"
             android:layout_width="409dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -135,51 +151,32 @@
 
             <TextView
                 android:id="@+id/tvHome"
-                android:layout_width="wrap_content"
+                android:layout_width="51dp"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Time Casa" />
 
             <TextView
                 android:id="@+id/tvAway"
-                android:layout_width="wrap_content"
+                android:layout_width="49dp"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Time Fora" />
 
             <TextView
                 android:id="@+id/tvMercado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:gravity="center"
                 android:layout_weight="1"
                 android:text="Mercado" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
-
-            <TextView
-                android:id="@+id/tvOdd"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="ODD" />
-
-            <TextView
-                android:id="@+id/tvValor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Valor" />
-
-
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout5"
@@ -188,48 +185,55 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
             <EditText
                 android:id="@+id/etValorOdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
+                android:hint="Valor ODD"
+                android:ems="5"
                 android:inputType="numberDecimal" />
 
             <EditText
                 android:id="@+id/etValorUnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:hint="Valor Und"
+                android:layout_weight="1"
+                android:ems="5"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:id="@+id/tvOddxUnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:text="Total: " />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvOddxUnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Total: "
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/tvTituloPreencherDados"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/cyanLight"
+        android:layout_marginTop="102dp"
         android:text="Preenha os Dados"
+        android:gravity="center"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUndBanca" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -238,14 +242,16 @@
         android:clickable="true"
         android:src="@drawable/add_circle_24px"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvMinhaListaItens" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/rvMinhaListaItens"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
@@ -256,6 +262,6 @@
         android:text="Total da sua Banca: "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@+id/rvMinhaListaItens" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
