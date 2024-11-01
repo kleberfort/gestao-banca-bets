@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaChangeListener {
 
     private EditText etBancaInicialCarregar, etValorOdd, etValorUnd;
     private TextView tvUndBanca, tvOddxUnd, tvTotalBanca;
@@ -70,6 +70,8 @@ public class HomeFragment extends Fragment {
     private static final String KEY_SELECTED_OPTION = "selected_option";  // Chave para a opção selecionada do RadioGroup
     private static final String KEY_VALOR_UNIDADE = "valorUnidadeStr ";
 
+    private static final String KEY_TOTAL_BANCA = "total_banca";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -91,23 +93,24 @@ public class HomeFragment extends Fragment {
         rb40Und = view.findViewById(R.id.rb40Und);
         rvMinhaListaItens = view.findViewById(R.id.rvMinhaListaItens);
 
-
-
-
+        // Acessar o SharedPreferences para limpar
+  //      limparListaSharedPrerefereces();
+//
         // Inicializar lista e adaptador
         listaItems = new ArrayList<>();
-//        MinhaLista minhaLista = new MinhaLista("Palmerias", "Fortaleza","Multipla", "Aberto", "22/04/2024", 2.50, 10.0, 100.0);
-//        listaItems.add(minhaLista);
+
 
         // Carregar dados do SharedPreferences
         carregarDados();
 
-        totalBanca = bancaInicial;
-        tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
-
-        minhaListaAdapter = new MinhaListaAdapter(listaItems, getContext());
+        minhaListaAdapter = new MinhaListaAdapter(getContext(), listaItems, bancaInicial, this );
         rvMinhaListaItens.setLayoutManager(new LinearLayoutManager(getContext())); // Define o LayoutManager
         rvMinhaListaItens.setAdapter(minhaListaAdapter);
+
+        totalBanca += bancaInicial;
+
+        // totalBanca = bancaInicial;
+        tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
 
         // Ao clicar no botão "Adicionar"
         fabAdicionar.setOnClickListener(v -> adicionarAposta());
@@ -125,7 +128,6 @@ public class HomeFragment extends Fragment {
             setupSpinner(spnAway, "Selecione uma categoria");
             setupSpinner(spnMercado, "Selecione uma categoria");
         }
-
 
 
         // Adiciona o TextWatcher ao EditText etValorOdd
@@ -180,28 +182,32 @@ public class HomeFragment extends Fragment {
                 divisor = 40.0;
             }
             calcularValorUnidade();  // Somente calcula após a escolha de uma opção
-            salvarProdutos();
+            //salvarProdutos();
 
         });
 
         // Adiciona o TextWatcher ao EditText para capturar a entrada do usuário
         etBancaInicialCarregar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!s.toString().isEmpty()) {
                     try {
                         String valorBanca = etBancaInicialCarregar.getText().toString();
                         bancaInicial = parseDoubleBrasileiro(valorBanca);
                         salvarProdutos();
                         calcularValorUnidade(); // Calcular e atualizar o valor da unidade
+
                     } catch (NumberFormatException e) {
                         bancaInicial = 0.0; // Definir como 0 se houver erro na conversão
                     }
-                   // calcularValorUnidade();
+                    // calcularValorUnidade();
                 }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             }
 
             @Override
@@ -211,23 +217,19 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private void atualizarTotalBanca(double valor, boolean isGreen) {
-        if (isGreen) {
-            totalBanca += valor; // Adiciona ao total se for ganho
-        } else {
-            totalBanca -= valor; // Subtrai do total se for perda
-        }
-        tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
-    }
 
 
 
     private void salvarProdutos() {
+
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(listaItems);
         editor.putString(KEY_PRODUTOS, json);
+
+        // Salvar o valor de totalBanca
+        editor.putFloat(KEY_TOTAL_BANCA, (float) totalBanca); // Converter double para float ao salvar
 
         // Salvar o valor da banca inicial (valor do EditText etBancaInicialCarregar)
         String bancaInicialStr = etBancaInicialCarregar.getText().toString();
@@ -252,6 +254,7 @@ public class HomeFragment extends Fragment {
         }
 
 
+
         editor.apply();
 
     }
@@ -260,9 +263,11 @@ public class HomeFragment extends Fragment {
         // Recuperar o valor da lista de produtos (listaItems)
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
+
         String json = sharedPreferences.getString(KEY_PRODUTOS, null);
         Type type = new TypeToken<ArrayList<MinhaLista>>() {}.getType();
         listaItems = gson.fromJson(json, type);
+
 
         // Verificar se a lista está nula
         if (listaItems == null) {
@@ -282,6 +287,11 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Erro ao carregar valor da banca", Toast.LENGTH_SHORT).show();
             }
         }
+
+        // Recuperar o valor de totalBanca
+        float totalBancaFloat = sharedPreferences.getFloat(KEY_TOTAL_BANCA, 0.0f);
+        double totalBanca = (double) totalBancaFloat;
+        this.totalBanca = totalBanca; // Atualizar a variável totalBanca com o valor carregado
 
         // Recuperar a opção selecionada do RadioGroup
         int selectedRadioButtonId = sharedPreferences.getInt(KEY_SELECTED_OPTION, R.id.rb100Und);
@@ -306,7 +316,10 @@ public class HomeFragment extends Fragment {
     private void atualizarSpinner() {
         // Exemplo de como você pode atualizar o Spinner
         // Altere de acordo com a sua lógica
+        spnHome.setSelection(0);
+        spnAway.setSelection(0);
         spnMercado.setSelection(0); // Reseta para a primeira opção após adicionar
+
     }
     private void adicionarAposta() {
         // Verifica se todos os campos estão preenchidos antes de adicionar
@@ -319,23 +332,17 @@ public class HomeFragment extends Fragment {
         String homeTeam = itemSelecionadoHome;
         String awayTeam = itemSelecionadoAway;
         String mercado = itemSelecionadoMercado;
-        String situacao = "Aberto";  // Pode ser alterado conforme sua lógica
+        String situacao = "Red";  // Pode ser alterado conforme sua lógica
         String dataInsercao = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-
         // Capturar os valores numéricos
         double odd = valorOdd;
         double valor = valorUnd;
-        double bancaInicial = this.bancaInicial;
-
-        // Identifique se a aposta é "green" ou "red" baseado no mercado
-        boolean isGreen = "green".equalsIgnoreCase(mercado);
+        double oddxValor = valorOdd * valorUnd;
 
         // Criar uma nova instância de MinhaLista
-        MinhaLista novaAposta = new MinhaLista(homeTeam, awayTeam, mercado, situacao, dataInsercao, odd, valor, bancaInicial);
+        MinhaLista novaAposta = new MinhaLista(homeTeam, awayTeam, mercado, situacao, dataInsercao, odd, valor, oddxValor);
         listaItems.add(novaAposta);
 
-        // Atualiza o total da banca
-        atualizarTotalBanca(valor, isGreen);
 
 
         salvarProdutos();
@@ -455,5 +462,30 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
             return 0.0;  // Retorna 0.0 se houver erro na conversão
         }
+    }
+
+    @Override
+    public void onBancaChange(double novoValorBanca) {
+        // Atualize o valor total da banca
+
+         totalBanca = novoValorBanca;
+
+
+     //   salvarProdutos();
+
+        Log.d("totalBanca", "onBancaChange: " + totalBanca);
+
+
+        // Atualize o TextView com o novo valor
+        //tvTotalBanca.setText("Total da sua Banca: " + totalBanca);
+    }
+
+    public void limparListaSharedPrerefereces(){
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Limpar a lista de produtos armazenada em SharedPreferences
+        editor.remove(KEY_PRODUTOS);
+        editor.apply(); // Aplica imediatamente a remoção
     }
 }

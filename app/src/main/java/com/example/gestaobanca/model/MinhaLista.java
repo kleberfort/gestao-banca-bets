@@ -9,15 +9,21 @@ package com.example.gestaobanca.model;
         private double odd;
         private double valor;
         private double oddxValor;
-        private double bancaInicial;
+
         private double bancaFinal;
+
+        private double retornoStatus;
+
+
+
+
 
         public MinhaLista() {
         }
 
         // Construtor da classe ApostaItem
         public MinhaLista(String homeTeam, String awayTeam, String mercado, String situacao, String dataInsercao,
-                          double odd, double valor, double bancaInicial) {
+                          double odd, double valor, double oddxValor) {
             this.homeTeam = homeTeam;
             this.awayTeam = awayTeam;
             this.mercado = mercado;
@@ -25,9 +31,7 @@ package com.example.gestaobanca.model;
             this.dataInsercao = dataInsercao;
             this.odd = odd;
             this.valor = valor;
-            this.oddxValor = odd * valor;  // Calcula odd x valor diretamente
-            this.bancaInicial = bancaInicial;
-            this.bancaFinal = calcularBancaFinal();
+            this.oddxValor = oddxValor;  // Calcula odd x valor diretamente
         }
 
         // Getters e Setters para os atributos
@@ -50,34 +54,44 @@ package com.example.gestaobanca.model;
         public void setOdd(double odd) {
             this.odd = odd;
             this.oddxValor = odd * this.valor;  // Atualiza oddxValor ao alterar odd
-            this.bancaFinal = calcularBancaFinal();
+
         }
 
         public double getValor() { return valor; }
         public void setValor(double valor) {
             this.valor = valor;
             this.oddxValor = this.odd * valor;  // Atualiza oddxValor ao alterar valor
-            this.bancaFinal = calcularBancaFinal();
+
         }
 
-        public double getOddxValor() { return oddxValor; }
+        public double getOddxValor() { return oddxValor ; }
 
-        public double getBancaInicial() { return bancaInicial; }
-        public void setBancaInicial(double bancaInicial) {
-            this.bancaInicial = bancaInicial;
-            this.bancaFinal = calcularBancaFinal();
+
+
+        public double getBancaFinal() {
+            return   bancaFinal; }
+
+        public void setBancaFinal(double bancaFinal) {
+            this.bancaFinal = bancaFinal;
         }
 
-        public double getBancaFinal() { return bancaFinal; }
 
-        // Método para calcular a banca final com base na situação
-        private double calcularBancaFinal() {
-            if (situacao.equals("Green")) {
-                return bancaInicial + oddxValor;  // Se for green, adiciona o valor de odd x valor
-            } else if (situacao.equals("Red")) {
-                return bancaInicial - valor;  // Se for red, subtrai o valor da aposta
-            } else {
-                return bancaInicial;  // Se for "Aberto" ou outra situação, banca final é igual à inicial
+        public void setOddxValor(double oddxValor) {
+            this.oddxValor = oddxValor;
+        }
+
+        public double getRetornoStatus(String status) {
+
+            if(status.equals("Aberto")){
+                retornoStatus = -getValor();
+            }else if(status.equals("Green")){
+                retornoStatus = oddxValor - getValor();
+            }else{
+                retornoStatus = -getValor();
             }
+
+            return retornoStatus;
         }
+
+
     }

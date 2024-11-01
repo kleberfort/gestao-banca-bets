@@ -2,9 +2,8 @@
     <string name="app_name">GestaoBanca</string>
 
     <string-array name="situacoes_array">
-        <item>Aberto</item>
-        <item>Green</item>
         <item>Red</item>
+        <item>Green</item>
     </string-array>
 
 </resources>
