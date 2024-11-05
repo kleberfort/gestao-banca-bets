@@ -465,20 +465,12 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
     }
 
     @Override
-    public void onBancaChange(double novoValorBanca) {
-        // Atualize o valor total da banca
-
-         totalBanca = novoValorBanca;
-
-
-     //   salvarProdutos();
-
-        Log.d("totalBanca", "onBancaChange: " + totalBanca);
-
-
-        // Atualize o TextView com o novo valor
-        //tvTotalBanca.setText("Total da sua Banca: " + totalBanca);
+    public void onBancaChange(double novaBanca) {
+        totalBanca = novaBanca;
+        tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
+        salvarProdutos();  // Atualiza o valor de banca no SharedPreferences, se necessário
     }
+
 
     public void limparListaSharedPrerefereces(){
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);

@@ -23,35 +23,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.ViewHolder> {
-    private List<MinhaLista> listaApostas;
-    private Context context;
+
+    private final List<MinhaLista> listaApostas;
+    private final Context context;
     private double bancaInicial;
     private double bancaAtual;
-    private OnBancaChangeListener onBancaChangeListener;
+    private final OnBancaChangeListener onBancaChangeListener;
 
-    private double auxBancaFinal = 0.0;
-
-    private double teste = 0.0;
-
-    private double recebeBind = 0.0;
-
-
-    // Defina a interface
+    // Interface para comunicação com o Fragment
     public interface OnBancaChangeListener {
         void onBancaChange(double novoValorBanca);
     }
 
-    // Construtor para passar a interface
-    public MinhaListaAdapter(Context context, List<MinhaLista> itens, double bancaInicial,OnBancaChangeListener onBancaChangeListener) {
+    // Construtor
+    public MinhaListaAdapter(Context context, List<MinhaLista> itens, double bancaInicial, OnBancaChangeListener onBancaChangeListener) {
         this.context = context;
         this.listaApostas = itens;
         this.bancaInicial = bancaInicial;  // Valor inicial
         this.bancaAtual = bancaInicial;  // Começa com o mesmo valor da banca inicial
         this.onBancaChangeListener = onBancaChangeListener;
-
-        //
-        //Log.d("bancaAtual", "Contrutor: " + bancaAtual);
-
     }
 
     @NonNull
@@ -65,7 +55,8 @@ public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MinhaLista aposta = listaApostas.get(position);
 
-        holder.tvHomeTeam.setText(aposta.getHomeTeam() +"  X");
+        // Configurar os dados do item
+        holder.tvHomeTeam.setText(aposta.getHomeTeam() + " X");
         holder.tvAwayTeam.setText(aposta.getAwayTeam());
         holder.tvMercado.setText(aposta.getMercado());
         holder.tvDataInsercao.setText(aposta.getDataInsercao());
@@ -73,44 +64,49 @@ public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.Vi
         holder.tvValor.setText(String.format("Valor: %.2f", aposta.getValor()));
         holder.tvOddxValor.setText(String.format("Ganhos: %.2f", aposta.getOddxValor()));
 
-
-
-
-
-        // Configurar o Spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
-                R.array.situacoes_array, android.R.layout.simple_spinner_item);
+        // Configurar o spinner com valores do array de strings
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.situacoes_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.spinnerSituacao.setAdapter(adapter);
 
+        // Define o estado inicial do Spinner
+        if ("Red".equals(aposta.getSituacao())) {
+            holder.spinnerSituacao.setSelection(adapter.getPosition("Red"));
+            holder.linearLayoutAdicaoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.red));
+        } else if ("Green".equals(aposta.getSituacao())) {
+            holder.spinnerSituacao.setSelection(adapter.getPosition("Green"));
+            holder.linearLayoutAdicaoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.green));
+        } else {
+            holder.spinnerSituacao.setSelection(0); // Posição inicial
+        }
 
+        // Listener do Spinner para detectar alterações
         holder.spinnerSituacao.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
                 String situacaoAtual = (String) parentView.getItemAtPosition(pos);
 
-                // Chama o método para calcular e atualizar a banca atual
-                //recalcularBanca(situacaoAtual, holder);
+                // Atualiza o retorno de acordo com a situação selecionada
+                double valorRetorno = aposta.getRetornoStatus(situacaoAtual);
+                aposta.setValorRetornoStatusAposta(valorRetorno);
+                aposta.setSituacao(situacaoAtual);
 
-
-
-                 teste =  aposta.getRetornoStatus(situacaoAtual);
-                Log.d("teste", "teste " + teste +" situacaoAtual " + situacaoAtual);
-                 auxBancaFinal += teste;
-
-                Log.d("teste", "auxBancaFinal " + teste +" situacaoAtual " + auxBancaFinal);
-
-                // Alterar cor do layout de acordo com a situação
+                // Atualiza a cor do layout com base na situação
                 if ("Red".equals(situacaoAtual)) {
                     holder.linearLayoutAdicaoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.red));
-
                 } else if ("Green".equals(situacaoAtual)) {
                     holder.linearLayoutAdicaoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.green));
                 }
 
+                // Calcula a nova banca atualizada
+                double novaBanca = bancaInicial;
+                for (MinhaLista item : listaApostas) {
+                    novaBanca += item.getValorRetornoStatusAposta();
+                }
+                bancaAtual = novaBanca;
 
-                //Log.d("bancaAtual", "spinnerSituacao: " + bancaAtual + " situacaoAtual: " +situacaoAtual);
-
+                // Notifica o Fragment sobre a mudança na banca
+                notificarMudancaBanca();
             }
 
             @Override
@@ -118,74 +114,37 @@ public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.Vi
                 // Não faz nada
             }
         });
-
-
-
     }
 
-    // Método separado para realizar o cálculo e atualizar a banca
-    private void recalcularBanca(String situacaoAtual, ViewHolder holder) {
-        double aberto = 0.0;
-        double green = 0.0;
-        double red = 0.0;
-
-        for (int i = 0; i < listaApostas.size(); i++) {
-            if ("Aberto".equals(situacaoAtual)) {
-                aberto += -listaApostas.get(i).getValor();
-                Log.d("aberto", "aberto: " + aberto);
-            } else if ("Green".equals(situacaoAtual)) {
-                green += (listaApostas.get(i).getOdd() * listaApostas.get(i).getValor()) - listaApostas.get(i).getValor();
-                Log.d("green", "green: " + green);
-            } else {
-                red += -(listaApostas.get(i).getOdd() * listaApostas.get(i).getValor());
-                Log.d("red", "red: " + red);
-            }
-        }
-
-//        bancaAtual = aberto + green + red;
-//        Log.d("bancaAtual", "bancaAtual: agora " + bancaAtual);
-
-        notificarMudancaBanca(); // Notifica a mudança na banca
+    @Override
+    public int getItemCount() {
+        return listaApostas.size();
     }
 
+    // Método para notificar o Fragment sobre a mudança na banca
     private void notificarMudancaBanca() {
         if (onBancaChangeListener != null) {
             onBancaChangeListener.onBancaChange(bancaAtual);
         }
     }
 
-    @Override
-    public int getItemCount() {
-        Log.d("auxBancaFinal", "getItemCount " + auxBancaFinal);
-        return listaApostas.size();
-
-
-
-    }
-
+    // ViewHolder para o RecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvHomeTeam;
-        TextView tvAwayTeam;
-        TextView tvMercado;  // Corrigido de textViewMercado para tvMercado
-        TextView tvDataInsercao;
-        TextView tvOdd;
-        TextView tvValor;
-        TextView tvOddxValor;  // Corrigido de tvOddxUnd para tvOddxValor
-        Spinner spinnerSituacao;  // Adicionando o Spinner
-        LinearLayout linearLayoutAdicaoItem; // Adicione o layout aqui
+        TextView tvHomeTeam, tvAwayTeam, tvMercado, tvDataInsercao, tvOdd, tvValor, tvOddxValor;
+        Spinner spinnerSituacao;
+        LinearLayout linearLayoutAdicaoItem;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvHomeTeam = itemView.findViewById(R.id.tvHomeTeam);
             tvAwayTeam = itemView.findViewById(R.id.tvAwayTeam);
-            tvMercado = itemView.findViewById(R.id.textViewMercado);  // Usando o ID correto
+            tvMercado = itemView.findViewById(R.id.textViewMercado);
             tvDataInsercao = itemView.findViewById(R.id.tvDataInsercao);
             tvOdd = itemView.findViewById(R.id.tvOdd);
             tvValor = itemView.findViewById(R.id.tvValor);
-            tvOddxValor = itemView.findViewById(R.id.tvOddxUnd);  // Usando o ID correto
+            tvOddxValor = itemView.findViewById(R.id.tvOddxUnd);
             spinnerSituacao = itemView.findViewById(R.id.spinnerSituacao);
-            linearLayoutAdicaoItem = itemView.findViewById(R.id.linearLayoutAdicaoItem); // Referência ao layout
-
+            linearLayoutAdicaoItem = itemView.findViewById(R.id.linearLayoutAdicaoItem);
         }
     }
 }

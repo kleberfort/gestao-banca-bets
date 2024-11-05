@@ -10,13 +10,15 @@ package com.example.gestaobanca.model;
         private double valor;
         private double oddxValor;
 
-        private double bancaFinal;
+        private double valorRetornoStatusAposta;
 
-        private double retornoStatus;
+        public double getValorRetornoStatusAposta() {
+            return valorRetornoStatusAposta;
+        }
 
-
-
-
+        public void setValorRetornoStatusAposta(double valorRetornoStatusAposta) {
+            this.valorRetornoStatusAposta = valorRetornoStatusAposta;
+        }
 
         public MinhaLista() {
         }
@@ -68,12 +70,7 @@ package com.example.gestaobanca.model;
 
 
 
-        public double getBancaFinal() {
-            return   bancaFinal; }
 
-        public void setBancaFinal(double bancaFinal) {
-            this.bancaFinal = bancaFinal;
-        }
 
 
         public void setOddxValor(double oddxValor) {
@@ -81,13 +78,12 @@ package com.example.gestaobanca.model;
         }
 
         public double getRetornoStatus(String status) {
+             double retornoStatus = 0.0;
 
-            if(status.equals("Aberto")){
+            if(status.equals("Red")){
                 retornoStatus = -getValor();
             }else if(status.equals("Green")){
-                retornoStatus = oddxValor - getValor();
-            }else{
-                retornoStatus = -getValor();
+                retornoStatus = getOddxValor() - getValor();
             }
 
             return retornoStatus;
