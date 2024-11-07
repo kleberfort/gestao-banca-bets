@@ -29,19 +29,24 @@ public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.Vi
     private double bancaInicial;
     private double bancaAtual;
     private final OnBancaChangeListener onBancaChangeListener;
+    private final OnItemLongClickListener onItemLongClickListener;
 
-    // Interface para comunicação com o Fragment
     public interface OnBancaChangeListener {
         void onBancaChange(double novoValorBanca);
     }
 
-    // Construtor
-    public MinhaListaAdapter(Context context, List<MinhaLista> itens, double bancaInicial, OnBancaChangeListener onBancaChangeListener) {
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
+    }
+
+    public MinhaListaAdapter(Context context, List<MinhaLista> itens, double bancaInicial,
+                             OnBancaChangeListener onBancaChangeListener, OnItemLongClickListener onItemLongClickListener) {
         this.context = context;
         this.listaApostas = itens;
-        this.bancaInicial = bancaInicial;  // Valor inicial
-        this.bancaAtual = bancaInicial;  // Começa com o mesmo valor da banca inicial
+        this.bancaInicial = bancaInicial;
+        this.bancaAtual = bancaInicial;
         this.onBancaChangeListener = onBancaChangeListener;
+        this.onItemLongClickListener = onItemLongClickListener;
     }
 
     @NonNull
@@ -114,6 +119,20 @@ public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.Vi
                 // Não faz nada
             }
         });
+
+        // Listener para clique longo
+        holder.itemView.setOnLongClickListener(v -> {
+            if (onItemLongClickListener != null) {
+                onItemLongClickListener.onItemLongClick(position);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public void atualizarBanca(double novaBanca) {
+        this.bancaAtual = novaBanca;
+        notificarMudancaBanca();
     }
 
     @Override
@@ -121,14 +140,12 @@ public class MinhaListaAdapter extends RecyclerView.Adapter<MinhaListaAdapter.Vi
         return listaApostas.size();
     }
 
-    // Método para notificar o Fragment sobre a mudança na banca
     private void notificarMudancaBanca() {
         if (onBancaChangeListener != null) {
             onBancaChangeListener.onBancaChange(bancaAtual);
         }
     }
 
-    // ViewHolder para o RecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvHomeTeam, tvAwayTeam, tvMercado, tvDataInsercao, tvOdd, tvValor, tvOddxValor;
         Spinner spinnerSituacao;

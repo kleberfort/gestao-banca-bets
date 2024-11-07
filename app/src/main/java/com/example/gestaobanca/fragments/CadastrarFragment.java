@@ -30,9 +30,10 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
-public class CadastrarFragment extends Fragment {
+public class CadastrarFragment extends Fragment implements ItemAdapter.OnItemLongClickListener {
 
     private FragmentCadastrarBinding binding;
 
@@ -57,6 +58,8 @@ public class CadastrarFragment extends Fragment {
 
 
     private OnCategoryItemsMapListener listener;
+
+
 
     // Interface para enviar o HashMap
     public interface OnCategoryItemsMapListener {
@@ -99,6 +102,9 @@ public class CadastrarFragment extends Fragment {
         categoryItemsMap = new HashMap<>();
         currentItemsList = new ArrayList<>();
 
+        // Ordena a lista em ordem alfabética
+        Collections.sort(currentItemsList);
+
 
 
         // Configurando o Spinner
@@ -112,7 +118,7 @@ public class CadastrarFragment extends Fragment {
 
 
         // Configurando o RecyclerView e o Adapter
-        itemAdapter = new ItemAdapter(currentItemsList);
+        itemAdapter = new ItemAdapter(currentItemsList, this);
         recyclerViewItems.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewItems.setAdapter(itemAdapter);
 
@@ -130,6 +136,7 @@ public class CadastrarFragment extends Fragment {
                 String newCategory = editTextCategory.getText().toString().trim();
                 if (!newCategory.isEmpty() && !categories.contains(newCategory)) {
                     categories.add(newCategory);
+                    Collections.sort(categories);  // Ordena as categorias
                     spinnerAdapter.notifyDataSetChanged();
                     categoryItemsMap.put(newCategory, new ArrayList<>());  // Cria uma lista de itens para a nova categoria
 
@@ -234,6 +241,7 @@ public class CadastrarFragment extends Fragment {
 
                     if (items != null) {
                         items.add(itemName);  // Adiciona o item à lista da categoria
+                        Collections.sort(items);  // Ordena os itens da categoria
                         saveDataToSharedPreferences();
                         updateRecyclerViewForCategory(currentCategory);  // Atualiza o RecyclerView
                     }
@@ -348,6 +356,26 @@ public class CadastrarFragment extends Fragment {
         spinnerAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onItemLongClick(int position) {
+        String itemToDelete = currentItemsList.get(position);
 
+        new AlertDialog.Builder(getContext())
+                .setTitle("Excluir Item")
+                .setMessage("Tem certeza de que deseja excluir o item '" + itemToDelete + "'?")
+                .setPositiveButton("Sim", (dialog, which) -> {
+                    // Remove o item da lista atual e do HashMap
+                    currentItemsList.remove(position);
+                    categoryItemsMap.get(currentCategory).remove(itemToDelete);
+
+                    // Atualiza o RecyclerView e salva as alterações no SharedPreferences
+                    itemAdapter.notifyItemRemoved(position);
+                    saveDataToSharedPreferences();
+
+                    Toast.makeText(getContext(), "Item excluído", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Não", null)
+                .show();
+    }
 
 }

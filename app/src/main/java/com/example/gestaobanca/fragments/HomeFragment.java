@@ -1,5 +1,6 @@
 package com.example.gestaobanca.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.icu.text.NumberFormat;
@@ -39,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaChangeListener {
+public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaChangeListener, MinhaListaAdapter.OnItemLongClickListener {
 
     private EditText etBancaInicialCarregar, etValorOdd, etValorUnd;
     private TextView tvUndBanca, tvOddxUnd, tvTotalBanca;
@@ -103,7 +104,7 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
         // Carregar dados do SharedPreferences
         carregarDados();
 
-        minhaListaAdapter = new MinhaListaAdapter(getContext(), listaItems, bancaInicial, this );
+        minhaListaAdapter = new MinhaListaAdapter(getContext(), listaItems, bancaInicial, this, this);
         rvMinhaListaItens.setLayoutManager(new LinearLayoutManager(getContext())); // Define o LayoutManager
         rvMinhaListaItens.setAdapter(minhaListaAdapter);
 
@@ -182,7 +183,7 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
                 divisor = 40.0;
             }
             calcularValorUnidade();  // Somente calcula após a escolha de uma opção
-            //salvarProdutos();
+            salvarProdutos();
 
         });
 
@@ -217,7 +218,16 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
         return view;
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Verifique se a lista de itens está vazia
+        if (listaItems.isEmpty()) {
+            totalBanca = bancaInicial; // Restaura a banca ao valor inicial
+        }
+        // Atualiza a interface do usuário
+        tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
+    }
 
 
     private void salvarProdutos() {
@@ -334,6 +344,7 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
         String mercado = itemSelecionadoMercado;
         String situacao = "Red";  // Pode ser alterado conforme sua lógica
         String dataInsercao = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
         // Capturar os valores numéricos
         double odd = valorOdd;
         double valor = valorUnd;
@@ -341,15 +352,16 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
 
         // Criar uma nova instância de MinhaLista
         MinhaLista novaAposta = new MinhaLista(homeTeam, awayTeam, mercado, situacao, dataInsercao, odd, valor, oddxValor);
-        listaItems.add(novaAposta);
 
+        // Adiciona o item na primeira posição da lista
+        listaItems.add(0, novaAposta); // Adiciona na posição 0
 
-
+        // Salva os produtos (se necessário)
         salvarProdutos();
 
-        minhaListaAdapter.notifyDataSetChanged();
-
-
+        // Notifica o adaptador da mudança na lista
+        minhaListaAdapter.notifyItemInserted(0); // Notifica que um item foi inserido na posição 0
+        minhaListaAdapter.notifyDataSetChanged(); // Pode ser mantido para garantir que a lista seja atualizada
 
         // Limpar os campos após a adição
         limparCampos();
@@ -464,6 +476,8 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
         }
     }
 
+
+
     @Override
     public void onBancaChange(double novaBanca) {
         totalBanca = novaBanca;
@@ -479,5 +493,67 @@ public class HomeFragment extends Fragment implements MinhaListaAdapter.OnBancaC
         // Limpar a lista de produtos armazenada em SharedPreferences
         editor.remove(KEY_PRODUTOS);
         editor.apply(); // Aplica imediatamente a remoção
+    }
+
+    private void confirmarExclusaoItem(int position) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Excluir Item")
+                .setMessage("Tem certeza de que deseja excluir este item?")
+                .setPositiveButton("Sim", (dialog, which) -> {
+                    // Verifica se o índice é válido
+                    if (position < 0 || position >= listaItems.size()) {
+                        Toast.makeText(getContext(), "Item inválido", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Remove o item da lista
+                    MinhaLista itemRemovido = listaItems.get(position);
+                    listaItems.remove(position);
+
+                    // Atualiza o valor total da banca com base na situação do item removido
+                    if ("Red".equals(itemRemovido.getSituacao())) {
+                        totalBanca += itemRemovido.getValor(); // Adiciona o valor
+                    } else {
+                        totalBanca -= itemRemovido.getValor(); // Subtrai o valor
+                    }
+
+                    // Verifica se a lista de itens está vazia
+                    if (listaItems.isEmpty()) {
+                        // Se a lista estiver vazia, restaura a banca ao valor inicial
+                        totalBanca = bancaInicial;
+                    }
+
+                    // Atualiza a interface do usuário
+                    tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
+
+                    // Salva a lista e totalBanca atualizados
+                    salvarProdutos();
+
+                    // Atualiza o adaptador e notifica a mudança da banca
+                    minhaListaAdapter.notifyItemRemoved(position); // Notifica a remoção do item
+                    minhaListaAdapter.atualizarBanca(totalBanca); // Atualiza a banca no adaptador
+
+                    // Caso precise forçar a atualização da lista
+                    minhaListaAdapter.notifyDataSetChanged();
+
+                    Toast.makeText(getContext(), "Item excluído", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Não", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        // Chama o método de confirmação de exclusão quando o item é pressionado longamente
+        confirmarExclusaoItem(position);
+    }
+
+    private void atualizarTotalBanca() {
+        totalBanca = bancaInicial;
+        for (MinhaLista item : listaItems) {
+            totalBanca += item.getValor();  // Supondo que `getValor()` retorne o valor do item
+        }
+        tvTotalBanca.setText(String.format("Total Banca: R$ %.2f", totalBanca));
     }
 }
